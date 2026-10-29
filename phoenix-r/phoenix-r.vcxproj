@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <!-- EFI images are x64 only here: the prebuilt EDK-II library set ships only
+         EDK-II\x64\<Config>. Add IA32 only after building 32-bit EDK-II libraries. -->
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>18.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{d1c52f52-345c-4b8e-8366-45446d180e74}</ProjectGuid>
+    <RootNamespace>phoenixr</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <!-- Defaults sheet: config-level defaults + EDK include/library roots. Must come
+       before Microsoft.Cpp.props (it feeds IncludePath/LibraryPath/ConfigurationType). -->
+  <Import Project="..\samples.default.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <!-- Main sheet: compiler/linker flags, .efi extension, output dirs, qemu debugger. -->
+  <Import Project="..\samples.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <!-- EDK include paths and vshacks.h come from the property sheets; only
+           project-specific settings belong here. -->
+      <ForcedIncludeFiles>%(ForcedIncludeFiles);$(ProjectDir)stdafx.h</ForcedIncludeFiles>
+      <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug'">DEBUG_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <!-- EfiMain (the entry point named by samples.props) lives in this library and
+           forwards to UefiMain. For a runtime driver link UefiDriverEntryPoint.lib and
+           set SubSystem=EFI Runtime instead. -->
+      <AdditionalDependencies>BaseIoLibIntrinsic.lib;UefiApplicationEntryPoint.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>EFI Application</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="espi\espi.c" />
+    <ClCompile Include="fch\fch.c" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="pcie\pcie.c" />
+    <ClCompile Include="pci\pci.c" />
+    <ClCompile Include="spi\spi.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="espi\espi.h" />
+    <ClInclude Include="fch\fch.h" />
+    <ClInclude Include="pcie\pcie.h" />
+    <ClInclude Include="pci\pci.h" />
+    <ClInclude Include="spi\spi.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="structure\espi.h" />
+    <ClInclude Include="structure\spi.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

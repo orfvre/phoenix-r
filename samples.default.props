@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <!--
+      Root of the VisualUEFI tree. This sheet ships with the VisualUEFI samples, where it
+      assumed "$(SolutionDir)..\edk2" - true only when the project lives inside
+      <VisualUEFI>\samples\. We probe for a local edk2 tree first and otherwise fall back to
+      the installed VisualUEFI, so the sheet works from any project location.
+      Override via the IDE (User Macros) or -p:VisualUefiRoot=... if yours is elsewhere.
+    -->
+    <VisualUefiRoot Condition="'$(VisualUefiRoot)'=='' and Exists('$(SolutionDir)edk2\MdePkg\Include')">$(SolutionDir)</VisualUefiRoot>
+    <VisualUefiRoot Condition="'$(VisualUefiRoot)'=='' and Exists('$(SolutionDir)..\edk2\MdePkg\Include')">$(SolutionDir)..</VisualUefiRoot>
+    <VisualUefiRoot Condition="'$(VisualUefiRoot)'==''">C:\Program Files\VisualUefi</VisualUefiRoot>
+    <EDK_PATH>$(VisualUefiRoot)\edk2</EDK_PATH>
+    <EDK_II_PATH>$(VisualUefiRoot)\EDK-II</EDK_II_PATH>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IncludePath>$(EDK_PATH)\MdePkg\Include;$(EDK_PATH)\MdePkg\Include\X64;$(EDK_PATH)\ShellPkg\Include;$(EDK_PATH)\CryptoPkg\Include;$(EDK_PATH)\UefiCpuPkg\Include</IncludePath>
+    <LibraryPath>$(EDK_II_PATH)\$(Platform)\$(Configuration)</LibraryPath>
+    <!-- The VisualUEFI installer only ships prebuilt EDK-II libraries for one configuration;
+         fall back to it instead of leaving /LIBPATH pointing at nothing. -->
+    <LibraryPath Condition="!Exists('$(LibraryPath)')">$(EDK_II_PATH)\$(Platform)\Release</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <BuildMacro Include="EDK_PATH">
+      <Value>$(EDK_PATH)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
