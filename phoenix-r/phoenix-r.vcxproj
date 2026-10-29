@@ -46,7 +46,7 @@
            forwards to UefiMain. For a runtime driver link UefiDriverEntryPoint.lib and
            set SubSystem=EFI Runtime instead. -->
       <AdditionalDependencies>BaseIoLibIntrinsic.lib;UefiApplicationEntryPoint.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <SubSystem>EFI Application</SubSystem>
+      <SubSystem>EFI Runtime</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

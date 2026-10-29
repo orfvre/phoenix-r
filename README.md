@@ -16,6 +16,10 @@ The SPI/eSPI register offsets, the PSP/HFP ownership arbitration sequence, ECAM 
 
 > **If you are targeting a different platform**, consult the corresponding AMD Processor Programming Reference (PPR) for your family and model, and update the register definitions in `structure/` and the constants in `fch/`, `spi/`, and `espi/` accordingly.
 
+> [!WARNING]
+> **AMD ROM Armor**: This project has **not** been tested on platforms with AMD ROM Armor (SPI flash protection) enabled. ROM Armor restricts host-side SPI controller access, so SPI read/write/erase operations will likely fail or hang on systems where it is active.
+
+
 ## What's Implemented
 
 | Module | Description |
