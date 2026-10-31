@@ -25,6 +25,7 @@
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/UefiRuntimeServicesTableLib.h>
 #include <Library/IoLib.h>
+#include <Library/DevicePathLib.h>
 
 //
 // Shell library
@@ -37,6 +38,8 @@
 //
 
 #include <PiDxe.h>
+#include <Protocol/SimpleFileSystem.h>
+#include <Protocol/DevicePath.h>
 
 //
 // Custom Structures
@@ -68,5 +71,9 @@ extern SPI_PROTOCOL  gSpiProtocol;
 #include "espi/espi.h"
 
 extern ESPI_PROTOCOL gESpiProtocol;
+
+#include "flash/flash.h"
+
+extern FLASH_PROTOCOL  gFlashProtocol;
 
 #endif // STDAFX_H_

@@ -52,6 +52,7 @@
   <ItemGroup>
     <ClCompile Include="espi\espi.c" />
     <ClCompile Include="fch\fch.c" />
+    <ClCompile Include="flash\flash.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="pcie\pcie.c" />
     <ClCompile Include="pci\pci.c" />
@@ -60,6 +61,7 @@
   <ItemGroup>
     <ClInclude Include="espi\espi.h" />
     <ClInclude Include="fch\fch.h" />
+    <ClInclude Include="flash\flash.h" />
     <ClInclude Include="pcie\pcie.h" />
     <ClInclude Include="pci\pci.h" />
     <ClInclude Include="spi\spi.h" />

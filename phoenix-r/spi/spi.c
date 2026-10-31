@@ -554,6 +554,65 @@ SpiReadJedecIdImpl(
 }
 
 /**
+  Reads one double word from the JEDEC SFDP parameter space of the flash.
+
+  RDSFDP (5Ah) is followed by a 24-bit address and one dummy byte before the
+  device drives the data back (MX25U12873F, "Read SFDP Mode (RDSFDP)"). The FCH
+  controller has no separate dummy-cycle field in command mode, so the dummy
+  byte is clocked out of the FIFO as transmit data; the four receive bytes land
+  behind it in the FIFO.
+
+  @param[in]   SpiBase  MMIO base address of the FCH SPI register block.
+  @param[in]   Address  SFDP byte address (0 - 0xFFFFFF).
+  @param[out]  Value    Receives the little-endian double word.
+
+  @retval EFI_SUCCESS            The double word was read successfully.
+  @retval EFI_INVALID_PARAMETER  SpiBase is 0, Value is NULL, or Address does not fit in 24 bits.
+  @retval EFI_TIMEOUT            The controller stayed busy.
+**/
+EFI_STATUS
+EFIAPI
+SpiReadSfdpImpl(
+  IN   UINTN   SpiBase,
+  IN   UINT32  Address,
+  OUT  UINT32  *Value
+)
+{
+  EFI_STATUS  Status;
+  UINT8       Dummy;
+  UINT8       Data[sizeof (UINT32)];
+
+  if ((SpiBase == 0) || (Value == NULL) || (Address > 0xFFFFFF))
+  {
+    return EFI_INVALID_PARAMETER;
+  }
+
+  Dummy = 0xFF;
+
+  Status = SpiTransferRaw(
+    SpiBase,
+    SPI_OPCODE_RDSFDP,
+    3,
+    (UINT64) Address,
+    &Dummy,
+    1,
+    Data,
+    sizeof (Data)
+  );
+  if (EFI_ERROR(Status))
+  {
+    return Status;
+  }
+
+  *Value = ((UINT32) Data[0])       |
+           ((UINT32) Data[1] << 8)  |
+           ((UINT32) Data[2] << 16) |
+           ((UINT32) Data[3] << 24);
+
+  return EFI_SUCCESS;
+}
+
+/**
   Reads status register 1 of the SPI flash.
 
   @param[in]   SpiBase  MMIO base address of the FCH SPI register block.
@@ -878,6 +937,7 @@ GLOBAL_REMOVE_IF_UNREFERENCED SPI_PROTOCOL  gSpiProtocol = {
   SpiTransferImpl,
 
   SpiReadJedecIdImpl,
+  SpiReadSfdpImpl,
   SpiReadStatusImpl,
   SpiWriteEnableImpl,
   SpiWaitFlashReadyImpl,

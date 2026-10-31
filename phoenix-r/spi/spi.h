@@ -15,6 +15,7 @@
 // SPI flash opcodes (single I/O, JEDEC common set).
 //
 #define SPI_OPCODE_RDID       0x9F  ///< Read JEDEC ID (manufacturer, memory type, capacity).
+#define SPI_OPCODE_RDSFDP     0x5A  ///< Read SFDP (JESD216 parameter tables).
 #define SPI_OPCODE_RDSR1      0x05  ///< Read status register 1.
 #define SPI_OPCODE_RDSR2      0x35  ///< Read status register 2.
 #define SPI_OPCODE_WREN       0x06  ///< Write enable (sets WEL in status register 1).
@@ -176,6 +177,31 @@ EFI_STATUS
 (EFIAPI *SPI_READ_JEDEC_ID)(
   IN   UINTN  SpiBase,
   OUT  UINT8   JedecId[3]
+  );
+
+/**
+  Reads one double word from the JEDEC SFDP parameter space of the flash.
+
+  Issues RDSFDP (5Ah) with a 24-bit address and one dummy byte, then clocks the
+  four data bytes in, as described in the "Read SFDP Mode (RDSFDP)" section of
+  the MX25U12873F datasheet. The address is a byte address inside the SFDP
+  space; the double word that contains it is returned.
+
+  @param[in]   SpiBase  MMIO base address of the FCH SPI register block.
+  @param[in]   Address  SFDP byte address (0 - 0xFFFFFF).
+  @param[out]  Value    Pointer to a caller-allocated UINT32 that receives the
+                        double word, assembled little endian.
+
+  @retval EFI_SUCCESS            The double word was read successfully.
+  @retval EFI_INVALID_PARAMETER  SpiBase is 0, Value is NULL, or Address does not fit in 24 bits.
+  @retval EFI_TIMEOUT            The controller stayed busy.
+**/
+typedef
+EFI_STATUS
+(EFIAPI *SPI_READ_SFDP)(
+  IN   UINTN   SpiBase,
+  IN   UINT32  Address,
+  OUT  UINT32  *Value
   );
 
 /**
@@ -413,6 +439,7 @@ struct _SPI_PROTOCOL {
   SPI_TRANSFER           Transfer;
 
   SPI_READ_JEDEC_ID      ReadJedecId;
+  SPI_READ_SFDP          ReadSfdp;
   SPI_READ_STATUS        ReadStatus;
   SPI_WRITE_ENABLE       WriteEnable;
   SPI_WAIT_FLASH_READY   WaitFlashReady;

@@ -1,7 +1,7 @@
 /** @file
   phoenix-r UEFI driver entry point.
 
-  Enumerates the SPI flash through the custom FCH and SPI protocols and
+  Enumerates the SPI flash through the custom FCH and SPI protocols, dump the flash chip content and
   prints basic platform information.
 **/
 
@@ -98,6 +98,12 @@ UefiMain (
     (UINTN)JedecId[2],
     Status
     );
+
+  //
+  // Dump the entire SPI flash to a USB volume if one is attached.
+  //
+  Status = gFlashProtocol.Dump();
+  Print(L"SPI flash dump, %r\n", Status);
 
   Print(L"phoenix-r: loaded (ImageHandle=%p, SystemTable=%p)\n",ImageHandle, SystemTable);
   Print(L"phoenix-r: firmware %u.%02u\n",SystemTable->Hdr.Revision >> 16,SystemTable->Hdr.Revision & 0xFFFF);

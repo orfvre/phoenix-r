@@ -37,6 +37,9 @@
     <ClCompile Include="espi\espi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="flash\flash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -61,6 +64,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="structure\espi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="flash\flash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
